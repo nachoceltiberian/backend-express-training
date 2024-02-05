@@ -6,6 +6,7 @@ import { matchedData } from "express-validator";
 import { encrypt, comparePasswords } from "../utils/handlePassword";
 import models from "../models";
 const { userModel } = models;
+import { tokenSign } from "../utils/handleJwt";
 import { IUser } from "../models/no-sql/users";
 
 // import { customHeader } from "../middleware/customHeader";
@@ -23,8 +24,13 @@ router.post("/register", validatorRegister, async (req:any, res:any) => {
     const password = await encrypt(req.password);
     console.log(`passwordHash=${password}`);
     const body = {...req, password};
-    const data = await userModel.create(body);
-    data.set("password", undefined, { strict: false });
+    const dataUser = await userModel.create(body);
+    dataUser.set("password", undefined, { strict: false });
+
+    const data = {
+        token: await tokenSign(dataUser),
+        data: dataUser
+    };
     res.send({ data });
 });
 

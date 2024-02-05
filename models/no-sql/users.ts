@@ -18,10 +18,14 @@ const userSchema = new mongoose.Schema(
         role:{
             type: ['user','admin'],
             default: 'user'
+        },
+        deleted:{
+            type: Boolean,
+            default: false
         }
     },
     {
-        timestamp: true, //TODO createdAt,updatedAt
+        timestamps: true, //TODO createdAt,updatedAt
         versionKey: false
     }
 )

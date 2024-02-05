@@ -1,5 +1,22 @@
 import mongoose from "mongoose";
 
+export interface ITrack extends Document {
+    name: string;
+    album: string;
+    cover: string;
+    artist: {
+        name: string;
+        nickname: string;
+        nationality: string;
+    };
+    duration: {
+        start: number;
+        end: number;
+    };
+    mediaId: mongoose.Schema.Types.ObjectId;
+    deleted: boolean;
+};
+
 const trackSchema = new mongoose.Schema(
     {
         name:{
@@ -50,4 +67,4 @@ const trackSchema = new mongoose.Schema(
     }
 );
 
-export default mongoose.model('tracks', trackSchema);
+export default mongoose.model<ITrack>('tracks', trackSchema);

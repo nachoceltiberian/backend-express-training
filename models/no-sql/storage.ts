@@ -1,4 +1,10 @@
-import mongoose from "mongoose"
+import mongoose, { Document } from "mongoose";
+
+export interface IStorage extends Document {
+    url: string;
+    filename: string;
+    deleted: boolean;
+};
 
 const storageSchema = new mongoose.Schema(
     {
@@ -8,11 +14,15 @@ const storageSchema = new mongoose.Schema(
         filename:{
             type: String
         },
+        deleted:{
+            type: Boolean,
+            default: false
+        }
     },
     {
-        timestamp: true, //TODO createdAt, updatedAt
+        timestamps: true, //TODO createdAt, updatedAt
         versionKey: false
     }
 )
 
-export default mongoose.model('storages', storageSchema)
+export default mongoose.model<IStorage>('storages', storageSchema);

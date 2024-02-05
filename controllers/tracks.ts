@@ -3,6 +3,7 @@ import models from '../models';
 const { trackModel } = models;
 import { handleHttpError } from "../utils/handleError";
 import { matchedData } from "express-validator";
+import { ITrack } from "../models/no-sql/tracks";
 // import { ITrack } from '../models/no-sql/tracks';
 
 
@@ -28,10 +29,9 @@ export const getItems = async (req: Request, res: Response) => {
  */
 export const getItem = async (req: Request, res: Response) => {
     try {
-        const body = matchedData(req);
-        const { id } = body;
+        const { id } = matchedData(req);
 
-        const track = await trackModel.findById(id);
+        const track = await trackModel.findById(id) as ITrack;
 
         if (!track) {
             return res.status(404).send({ error: 'Track no encontrado.' });
@@ -55,7 +55,7 @@ export const getItem = async (req: Request, res: Response) => {
 export const createItem = async (req: Request, res: Response) => {
     try {
         const body = matchedData(req)
-        const track = await trackModel.create(body)
+        const track = await trackModel.create(body) as ITrack
         res.send({ track })
     } catch (err: any) {
         handleHttpError(res, "ERROR_CREATE_ITEMS");

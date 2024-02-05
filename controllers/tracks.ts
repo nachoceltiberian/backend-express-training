@@ -13,8 +13,8 @@ import { matchedData } from "express-validator";
  */
 export const getItems = async (req: Request, res: Response) => {
     try {
-        const data = await trackModel.find({}).lean().exec();
-        res.send({ data });
+        const tracks = await trackModel.find({}).lean().exec();
+        res.send({ tracks });
     } catch (err: any) {
         handleHttpError(res, "ERROR_GET_ITEMS");
     }
@@ -30,8 +30,18 @@ export const getItem = async (req: Request, res: Response) => {
     try {
         const body = matchedData(req);
         const { id } = body;
-        const data = await trackModel.findById(id);
-        res.send({ data });
+
+        const track = await trackModel.findById(id);
+
+        if (!track) {
+            return res.status(404).send({ error: 'Track no encontrado.' });
+        }
+
+        // Verifica si el documento ya ha sido eliminado
+        if (track.deleted) {
+            return res.status(401).send({ error: 'Este track ha sido eliminado suavemente.' });
+        }
+        res.send({ track });
     } catch (err) {
         handleHttpError(res, "ERROR_GET_ITEM");
     }
@@ -45,8 +55,8 @@ export const getItem = async (req: Request, res: Response) => {
 export const createItem = async (req: Request, res: Response) => {
     try {
         const body = matchedData(req)
-        const data = await trackModel.create(body)
-        res.send({ data })
+        const track = await trackModel.create(body)
+        res.send({ track })
     } catch (err: any) {
         handleHttpError(res, "ERROR_CREATE_ITEMS");
     }
@@ -61,8 +71,8 @@ export const createItem = async (req: Request, res: Response) => {
 export const updateItem = async (req: Request, res: Response) => {
     try {
         const { id, ...body } = matchedData(req);
-        const data = await trackModel.findOneAndUpdate({ _id: id }, body);
-        res.send({ data });
+        const track = await trackModel.findOneAndUpdate({ _id: id }, body);
+        res.send({ track });
     } catch (err: any) {
         console.error("Error en el update", err);
         handleHttpError(res, "ERROR_UPDATE_ITEM");
@@ -76,10 +86,26 @@ export const updateItem = async (req: Request, res: Response) => {
  */
 export const deleteItem = async (req: Request, res: Response) => {
     try {
-        const { id } = matchedData(req);
-        const data = await trackModel.deleteOne({ _id: id });
-        // TODO: soft delete no funciona con el paquete "mongoose-delete"
-        // data = await trackModel.delete({ _id: id }); // soft delete
+        const body = matchedData(req);
+        const { id, deleted } = body;
+        
+        const track = await trackModel.findById(id);
+
+        if (!track) {
+            return res.status(404).send({ error: 'Elemento no encontrado.' });
+        }
+
+        let data = {};
+
+        if (req.query.hard === "true") {
+            data = await trackModel.deleteOne({ _id: id });
+        } else {
+            if (track.deleted) {
+                return res.status(401).send({ error: 'Este elemento ya ha sido eliminado suavemente.' });
+            }
+            data = await track.updateOne({ deleted: true});    
+        }
+    
         res.send({ data });
     } catch (err: any) {
         console.error("Error en el delete", err);

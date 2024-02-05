@@ -37,11 +37,15 @@ const trackSchema = new mongoose.Schema(
             }
         },
         mediaId:{
-            type: mongoose.Schema.Types.ObjectId // mongoose.Schema.ObjectId
+            type: mongoose.Schema.Types.ObjectId // anteriormente mongoose.Schema.ObjectId
+        },
+        deleted:{
+            type: Boolean,
+            default: false
         }
     },
     {
-        timestamps: true, //TODO createdAt, updatedAt
+        timestamps: true, // createdAt, updatedAt
         versionKey: false
     }
 );

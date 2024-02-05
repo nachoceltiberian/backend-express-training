@@ -1,7 +1,7 @@
 import mongoose, { ConnectOptions } from 'mongoose'
 
 const dbConnect = async () => {
-    const DB_URI = 'mongodb+srv://nacho:H2EJO2B5LzJRHIGM@cluster0.fgjnhvc.mongodb.net/?retryWrites=true&w=majority'
+    const DB_URI = process.env.DB_URI || "URI_NOT_FOUND"
     const clientOptions: ConnectOptions = {}
 
     try {

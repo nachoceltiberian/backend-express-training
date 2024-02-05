@@ -5,8 +5,8 @@
 ```bash
 npm init --y
 
-npm i express typescript cors dotenv multer mongoose express-validator -S
-npm i -D @types/express @types/node @types/cors @types/mongoose npm i @types/multer
+npm i express typescript cors dotenv multer mongoose express-validator jsonwebtoken bcrypt-ts -S
+npm i -D @types/express @types/node @types/cors @types/mongoose @types/multer @types/jsonwebtoken
 npm i nodemon -g
 
 

@@ -2,12 +2,8 @@
 import express from "express";
 //import { getItems, getItem, createItem, updateItem, deleteItem } from "../controllers/auth";
 import { validatorLogin, validatorRegister } from "../validators/auth";
-import { matchedData } from "express-validator";
-import { encrypt, comparePasswords } from "../utils/handlePassword";
-import models from "../models";
-const { userModel } = models;
-import { tokenSign } from "../utils/handleJwt";
-import { IUser } from "../models/no-sql/users";
+import { registerController } from "../controllers/auth";
+
 
 // import { customHeader } from "../middleware/customHeader";
 
@@ -19,20 +15,7 @@ const router = express.Router();
  * localhost:3000/api/auth/login
  * localhost:3000/api/auth/register
  */
-router.post("/register", validatorRegister, async (req:any, res:any) => {
-    req = matchedData(req);
-    const password = await encrypt(req.password);
-    console.log(`passwordHash=${password}`);
-    const body = {...req, password};
-    const dataUser = await userModel.create(body);
-    dataUser.set("password", undefined, { strict: false });
-
-    const data = {
-        token: await tokenSign(dataUser),
-        data: dataUser
-    };
-    res.send({ data });
-});
+router.post("/register", validatorRegister, registerController);
 
 
 router.post("/login", validatorLogin, (req:any, res:any) => {

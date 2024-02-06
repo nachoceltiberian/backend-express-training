@@ -1,10 +1,15 @@
 import { Request, Response, NextFunction } from "express"
 import { handleHttpError } from "../utils/handleError"
-import { verifyToken } from "../utils/handleJwt";
+import { JwtPayloadCustom, verifyToken } from "../utils/handleJwt";
 import models from "../models";
+import { JwtPayload } from "jsonwebtoken";
 const { userModel } = models;
 
+// interface RequestWithUser extends Request {
+//     user: any;
+// }
 
+// TODO: Hacer que a la petición se le pueda añadir un atributo "user"
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (!req.headers.authorization) { 
@@ -20,17 +25,21 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
         console.log({ token });
 
-        const dataToken = await verifyToken(token);
+        const dataToken: JwtPayloadCustom = await verifyToken(token);
 
         console.log({ dataToken });
 
-        // La condición de este if es mejorable, pero yo ahora mismo no se
-        if (!('_id' in Object(dataToken))) {
+        if (!dataToken) {
+            handleHttpError(res, "ERROR_TOKEN", 401);
+            return;
+        }
+
+        if (!dataToken._id) {
             handleHttpError(res, "ERROR_ID_TOKEN", 401);
             return;
         }
-        const id = Object(dataToken)._id;
-        const user = await userModel.findById(id);
+        
+        const user = await userModel.findById(dataToken._id);
         Object(req).user = user;
 
         next();

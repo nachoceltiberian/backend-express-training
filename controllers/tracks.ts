@@ -14,7 +14,7 @@ import { ITrack } from "../models/no-sql/tracks";
  */
 export const getItems = async (req: Request, res: Response) => {
     try {
-        const user = Object(req).user;
+        const { user } = Object(req);
         const tracks = await trackModel.find({}).lean().exec();
         res.send({ tracks, user });
     } catch (err: any) {

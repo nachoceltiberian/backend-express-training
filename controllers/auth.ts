@@ -27,7 +27,7 @@ export const registerController = async (req: Request, res: Response) => {
         dataUser.set("password", undefined, { strict: false });
 
         const data = {
-            token: await tokenSign(dataUser),
+            token: await tokenSign(Object(dataUser)),
             data: dataUser
         };
 
@@ -69,7 +69,7 @@ export const loginController = async (req: Request, res: Response) => {
         user.set("password", undefined, {strict:false});
 
         const data = {
-            token: await tokenSign(user), //min 4:23:38 
+            token: await tokenSign(Object(user)), //min 4:23:38 
             user
         };
 

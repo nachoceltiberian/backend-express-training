@@ -1,6 +1,6 @@
 import mongoose, { ConnectOptions } from 'mongoose'
 
-const dbConnect = async () => {
+export const dbConnectNoSql = async () => {
     const DB_URI = process.env.DB_URI || "URI_NOT_FOUND"
     const clientOptions: ConnectOptions = {}
 
@@ -10,6 +10,4 @@ const dbConnect = async () => {
     } catch (err) {
         console.error("Fallo al conectarse a la base de datos", err)
     }
-}
-
-export default dbConnect
+};

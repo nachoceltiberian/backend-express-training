@@ -2,7 +2,7 @@
 import express from "express";
 //import { getItems, getItem, createItem, updateItem, deleteItem } from "../controllers/auth";
 import { validatorLogin, validatorRegister } from "../validators/auth";
-import { registerController } from "../controllers/auth";
+import { registerController, loginController } from "../controllers/auth";
 
 
 // import { customHeader } from "../middleware/customHeader";
@@ -18,9 +18,7 @@ const router = express.Router();
 router.post("/register", validatorRegister, registerController);
 
 
-router.post("/login", validatorLogin, (req:any, res:any) => {
-
-});
+router.post("/login", validatorLogin, loginController);
 
 
 export default router;

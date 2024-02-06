@@ -37,12 +37,19 @@ export const getItem = async (req: Request, res: Response) => {
         console.log({file});
 
         if (!file) {
-            return res.status(404).send({ error: 'Archivo no encontrado.' });
+            // return res.status(404).send({ error: 'Archivo no encontrado.' });
+
+            const errorMessage = "FILE_NOTE_FOUND"
+            handleHttpError(res, errorMessage, 404);
+            return;
         }
 
         // Verifica si el documento ya ha sido eliminado
         if (file.deleted) {
-            return res.status(401).send({ error: 'Este archivo ha sido eliminado suavemente.' });
+            // return res.status(401).send({ error: 'Este archivo ha sido eliminado suavemente.' });
+            const errorMessage = "ALREADY_SOFT_DELETED"
+            handleHttpError(res, errorMessage, 401);
+            return;
         }
         res.send({ file });
     } catch (err) {
@@ -62,7 +69,9 @@ export const createItem = async (req: Request, res: Response) => {
         // console.log(body)
 
         if (!file) {
-            throw new Error("Archivo no encontrado");
+            const errorMessage = "FILE_NOTE_FOUND"
+            handleHttpError(res, errorMessage, 404);
+            return;
         }
 
         const fileData = {
@@ -95,7 +104,11 @@ export const deleteItem = async (req: Request, res: Response) => {
         const filePath = `${MEDIA_PATH}/${filename}`;
 
         if (!file) {
-            return res.status(404).send({ error: 'Elemento no encontrado.' });
+            //return res.status(404).send({ error: 'Elemento no encontrado.' });
+
+            const errorMessage = "FILE_NOT_FOUND"
+            handleHttpError(res, errorMessage, 404);
+            return;
         }
 
         let data = {};
@@ -105,7 +118,11 @@ export const deleteItem = async (req: Request, res: Response) => {
             fs.unlinkSync(filePath);
         } else {
             if (file.deleted) {
-                return res.status(401).send({ error: 'Este elemento ya ha sido eliminado suavemente.' });
+                // return res.status(401).send({ error: 'Este elemento ya ha sido eliminado suavemente.' });
+
+                const errorMessage = "ALREADY_SOFT_DELETED"
+                handleHttpError(res, errorMessage, 401);
+                return;
             }
             data = await file.updateOne({ deleted: true});    
         }

@@ -7,7 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "falta JWT";
  * Debes de pasar el objeto del usuario
  * @param user 
  */
-                                    // TODO: Esto debería de hacerse de otra forma
+                                // TODO: Esto debería de hacerse de otra forma
 export const tokenSign = async (user: any) => {
     const sign = jwt.sign(
         {
@@ -19,6 +19,7 @@ export const tokenSign = async (user: any) => {
             expiresIn: "2h"
         }
     );
+    
 
     return sign;
 };

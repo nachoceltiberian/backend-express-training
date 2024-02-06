@@ -2,6 +2,7 @@
 import express from "express";
 import { getItems, getItem, createItem, updateItem, deleteItem } from "../controllers/tracks";
 import { validatorCreateItem, validatorGetItem } from "../validators/tracks";
+import { authMiddleware } from "../middleware/session";
 // import { customHeader } from "../middleware/customHeader";
 
 const router = express.Router();
@@ -9,7 +10,7 @@ const router = express.Router();
 /**
  * Lista los items
  */
-router.get("/", getItems);
+router.get("/", authMiddleware, getItems);
 
 /**
  * Obtener detalle de item

@@ -10,7 +10,7 @@ import { handleHttpError } from "../utils/handleError";
  */
 export const checkRole = (roles: string[]) => (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { user } = Object(req);
+        const { user } = res.locals;
         console.log({ user });
         const rolesByUser = user.role; // Por defecto: ["user"]
         

@@ -1,11 +1,10 @@
 import fs from "fs";
 import { Request, Response } from "express";
-import models from '../models';
+import modelsFactory from "../models";
 import { handleHttpError } from "../utils/handleError";
 import { matchedData } from "express-validator";
 import { IStorage } from "../models/no-sql/storage";
 
-const { storageModel } = models;
 const PUBLIC_URL = process.env.PUBLIC_URL;
 const MEDIA_PATH = `${__dirname}/../storage`;
 
@@ -16,6 +15,7 @@ const MEDIA_PATH = `${__dirname}/../storage`;
  */
 export const getItems = async (req: Request, res: Response) => {
     try{
+        const { storageModel } = await modelsFactory();
         const data = await storageModel.find({}).lean().exec();
         res.send({ data });
     } catch (err) {
@@ -33,6 +33,7 @@ export const getItems = async (req: Request, res: Response) => {
 export const getItem = async (req: Request, res: Response) => {
     try {
         const { id } = matchedData(req);
+        const { storageModel } = await modelsFactory();
         const file = await storageModel.findById(id);
         console.log({file});
 
@@ -79,6 +80,7 @@ export const createItem = async (req: Request, res: Response) => {
             url: `${PUBLIC_URL}/${file.filename}`
         }
 
+        const { storageModel } = await modelsFactory();
         const data = await storageModel.create(fileData);
         res.send({data});
     } catch (err) {
@@ -95,7 +97,7 @@ export const createItem = async (req: Request, res: Response) => {
 export const deleteItem = async (req: Request, res: Response) => {
     try {
         const { id } = matchedData(req);
-        
+        const { storageModel } = await modelsFactory();
         const file = await storageModel.findById(id) as IStorage;
         console.log({file});
 

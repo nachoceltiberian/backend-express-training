@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { matchedData } from "express-validator";
 import { encrypt, comparePasswords } from "../utils/handlePassword";
-import models from "../models";
-const { userModel } = models;
+import modelsFactory from "../models";
 import { tokenSign } from "../utils/handleJwt";
 import { handleHttpError } from "../utils/handleError";
-// import { IUser } from "../models/no-sql/users";
+
+
 
 /**
  * Este controlador es el encargado de registar un usuario
@@ -22,6 +22,8 @@ export const registerController = async (req: Request, res: Response) => {
         body = {...body, password};
 
         console.log({ body });
+
+        const { userModel } = await modelsFactory();
 
         const dataUser = await userModel.create(body);
         dataUser.set("password", undefined, { strict: false });
@@ -46,6 +48,8 @@ export const registerController = async (req: Request, res: Response) => {
 export const loginController = async (req: Request, res: Response) => { 
     try{
         let body = matchedData(req);
+        const { userModel } = await modelsFactory();
+        
         const user = await userModel.findOne({ email: body.email }).select("password");
         console.log({body})
         console.log({user})

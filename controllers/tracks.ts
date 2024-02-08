@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import models from '../models';
-const { trackModel } = models;
+import modelsFactory from "../models";
 import { handleHttpError } from "../utils/handleError";
 import { matchedData } from "express-validator";
 import { ITrack } from "../models/no-sql/tracks";
@@ -15,6 +15,7 @@ import { ITrack } from "../models/no-sql/tracks";
 export const getItems = async (req: Request, res: Response) => {
     try {
         const { user } = Object(req);
+        const { trackModel } = await modelsFactory();
         const tracks = await trackModel.find({}).lean().exec();
         res.send({ tracks, user });
     } catch (err: any) {
@@ -31,8 +32,8 @@ export const getItems = async (req: Request, res: Response) => {
 export const getItem = async (req: Request, res: Response) => {
     try {
         const { id } = matchedData(req);
-
-        const track = await trackModel.findById(id) as ITrack;
+        const { trackModel } = await modelsFactory();
+        const track = await trackModel.findOne({ id: id }) as ITrack;
 
         if (!track) {
             return res.status(404).send({ error: 'Track no encontrado.' });
@@ -55,7 +56,8 @@ export const getItem = async (req: Request, res: Response) => {
  */
 export const createItem = async (req: Request, res: Response) => {
     try {
-        const body = matchedData(req)
+        const body = matchedData(req);
+        const { trackModel } = await modelsFactory();
         const track = await trackModel.create(body) as ITrack
         res.send({ track })
     } catch (err: any) {
@@ -72,6 +74,7 @@ export const createItem = async (req: Request, res: Response) => {
 export const updateItem = async (req: Request, res: Response) => {
     try {
         const { id, ...body } = matchedData(req);
+        const { trackModel } = await modelsFactory();
         const track = await trackModel.findOneAndUpdate({ _id: id }, body);
         res.send({ track });
     } catch (err: any) {
@@ -90,6 +93,7 @@ export const deleteItem = async (req: Request, res: Response) => {
         const body = matchedData(req);
         const { id, deleted } = body;
         
+        const { trackModel } = await modelsFactory();
         const track = await trackModel.findById(id);
 
         if (!track) {

@@ -20,7 +20,7 @@ export const sequelize = new Sequelize(
         host,
         dialect:"mysql"
     }
-)
+);
 
 export const dbConnectMySql = async () => {
     try {

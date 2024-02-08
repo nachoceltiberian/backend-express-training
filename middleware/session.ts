@@ -1,9 +1,11 @@
 import { Request, Response, NextFunction } from "express"
 import { handleHttpError } from "../utils/handleError"
 import { JwtPayloadCustom, verifyToken } from "../utils/handleJwt";
-import models from "../models";
-import { JwtPayload } from "jsonwebtoken";
-const { userModel } = models;
+import modelsFactory from "../models";
+
+import { getProperties } from "../utils/handlePropertiesEngine";
+
+const propertiesKey = getProperties();
 
 // interface RequestWithUser extends Request {
 //     user: any;
@@ -33,14 +35,18 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
             handleHttpError(res, "ERROR_TOKEN", 401);
             return;
         }
-
-        if (!dataToken._id) {
-            handleHttpError(res, "ERROR_ID_TOKEN", 401);
-            return;
-        }
         
-        const user = await userModel.findById(dataToken._id);
-        Object(req).user = user;
+        const query = {
+            [propertiesKey.id]: dataToken[propertiesKey.id]
+        };
+
+        const { userModel } = await modelsFactory();
+        const user = await userModel.findOne(query);
+        // const user = await userModel.findById(dataToken[ID_KEY]);
+        // Object(req).user = user;
+
+        res.locals.user = user;
+
 
         next();
 

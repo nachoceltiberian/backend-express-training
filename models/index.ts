@@ -1,11 +1,11 @@
-import userModel from "./no-sql/users";
-import trackModel from "./no-sql/tracks";
-import storageModel from "./no-sql/storage";
+import dotenv from "dotenv";
+dotenv.config();
+const { ENGINE_DB } = process.env;
 
-const models = {
-    userModel,
-    trackModel,
-    storageModel
-};
+const modelsFactory = async () => ({
+    userModel: await import((ENGINE_DB === "nosql") ? "./no-sql/users" : "./mysql/users"),
+    trackModel: await import((ENGINE_DB === "nosql") ? "./no-sql/tracks" : "./mysql/tracks"),
+    storageModel: await import((ENGINE_DB === "nosql") ? "./no-sql/storage" : "./mysql/storage")
+});
 
-export default models;
+export default modelsFactory;
